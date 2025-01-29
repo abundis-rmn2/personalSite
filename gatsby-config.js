@@ -1,28 +1,38 @@
-/**
- * Configure your Gatsby site with this file.
- *
- * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
- */
-
-/**
- * @type {import('gatsby').GatsbyConfig}
- */
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
-    siteUrl: `https://gatsbystarterdefaultsource.gatsbyjs.io/`,
+    title: `Your Site Title`,
+    description: `Your site description.`,
+    author: `Your Name`, // Add this field
+  },
+  flags: {
+    DEV_SSR: false,
   },
   plugins: [
-    `gatsby-plugin-image`,
     {
-      resolve: `gatsby-source-filesystem`,
+      resolve: `gatsby-source-wordpress`,
       options: {
-        name: `images`,
-        path: `${__dirname}/src/images`,
+        url:
+          `https://headless.abundis.com.mx/graphql`, // Replace with your WordPress GraphQL endpoint
+        schema: {
+          timeout: 60000, // Increase timeout if your schema is large
+          perPage: 20, // Number of items to fetch per request
+          requestConcurrency: 1, // Number of concurrent requests
+        },
+        verbose: true, // Add verbose logging for debugging
+        type: {
+          Post: {
+            limit: process.env.NODE_ENV === `development` ? 50 : 5000, // Limit posts in development for faster builds
+          },
+        },
+        develop: {
+          hardCacheMediaFiles: true, // Cache media files during development
+        },
+        production: {
+          hardCacheMediaFiles: true, // Cache media files during production
+        },
       },
     },
+    `gatsby-plugin-image`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
@@ -40,4 +50,4 @@ module.exports = {
       },
     },
   ],
-}
+};
