@@ -7,6 +7,13 @@ const CodeProjectTemplate = ({ data }) => {
     return (
         <div>
             <h1>{codeProject.title}</h1>
+            
+            <p><strong>Project URL:</strong> {codeProject.projectUrl}</p>
+            <p><strong>GitHub Repo:</strong> {codeProject.githubRepo}</p>
+            <p><strong>Abstract:</strong> {codeProject.abstract}</p>
+            <p><strong>Display Date:</strong> {codeProject.displayDate}</p>
+            
+            <div dangerouslySetInnerHTML={{ __html: codeProject.content }} />
         </div>
     );
 };
@@ -16,6 +23,11 @@ export const query = graphql`
         wpCodeProject(id: { eq: $id }) {
             id
             title
+            content
+            projectUrl
+            githubRepo
+            abstract
+            displayDate
         }
     }
 `;

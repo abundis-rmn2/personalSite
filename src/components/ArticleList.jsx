@@ -25,7 +25,7 @@ const ArticleList = () => {
             <ul>
                 {articles.map((article) => (
                     <li key={article.id}>
-                        <Link to={`/paper/${article.slug}`}>{article.title} - <span>{article.abstract}</span></Link>
+                        <Link to={`/paper/${article.slug}`}>{article.title}</Link>
                     </li>
                 ))}
             </ul>

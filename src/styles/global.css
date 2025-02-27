@@ -1,0 +1,87 @@
+/* Header Styles */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    z-index: 1000;
+  }
+  
+  .header nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 0;
+  }
+  
+  .header nav ul li {
+    display: inline;
+  }
+  
+  .header nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px 10px;
+    transition: 0.3s;
+  }
+  
+  .header nav ul li a.active {
+    background: #ffcc00;
+    color: black;
+    border-radius: 5px;
+  }
+  
+  /* Anchor Bullets */
+  .anchor-nav {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1000;
+  }
+  
+  .anchor-nav .dot {
+    width: 12px;
+    height: 12px;
+    background: rgb(141, 141, 141);
+    border-radius: 50%;
+    opacity: 0.5;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  
+  .anchor-nav .dot.active {
+    background: #ffcc00;
+    opacity: 1;
+    transform: scale(1.4);
+  }
+  
+  /* Smooth Scrolling Sections */
+  .content {
+    position: relative;
+    z-index: 1;
+    padding-top: 60px; /* Avoid overlap with header */
+  }
+  
+  section {
+    min-height: 100vh;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    text-align: right;
+    font-size: 1.5rem;
+    background: linear-gradient(to right, rgb(255 255 255 / 0%) 0%, rgb(255 255 255) 89%, rgb(255 255 255) 100%);
+    padding: 9vw;
+    padding-left: 180px;
+    padding-right: 4vw;
+  }
