@@ -7,10 +7,11 @@ import CodeProjectsList from '../components/CodeProjectsList';
 import MultimediaList from '../components/MultimediaList';
 import MediaAppareancesList from '../components/MediaAppareancesList';
 import GlobalList from '../components/GlobalList';
-import Header from '../components/header';
 import AnchorMenu from '../components/anchor';
-import NetworkGraph from '../components/NetworkGraph';
+import Bio from '../components/Bio';
+import { motion } from 'framer-motion';
 import '../styles/global.css';
+
 
 const HomePage = () => {
   const [activeSection, setActiveSection] = useState("thesis");
@@ -26,6 +27,12 @@ const HomePage = () => {
     { id: "multimedia", label: "Multimedia" },
     { id: "media", label: "Media" },
   ];
+
+  const pageVariants = {
+    initial: { opacity: 0, x: -500 },
+    animate: { opacity: 1, x: 0, transition: { duration: 0.6 } },
+    exit: { opacity: 0, x: 500, transition: { duration: 0.6 } }
+};
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -72,74 +79,41 @@ const HomePage = () => {
     }
   });
 
-  const handleSetCameraPosition = () => {
-    if (networkGraphRef.current) {
-      networkGraphRef.current.setCameraPosition(100, 5, 2); // Move camera
-    }
-  };
-
-  const handleRotateGraph = () => {
-    if (networkGraphRef.current) {
-      networkGraphRef.current.rotateGraph(2221.0); // Rotate graph
-    }
-  };
-
-  const handleResizeGraph = () => {
-    if (networkGraphRef.current) {
-      networkGraphRef.current.resizeGraph(800, 600); // Resize canvas
-    }
-  };
-
-  const handleZoomToFit = () => {
-    if (networkGraphRef.current) {
-      networkGraphRef.current.zoomToFit(); // Zoom to fit
-    }
-  };
-
-  const handleZoomToID = (id) => {
-    if (networkGraphRef.current) {
-      console.log("index.js", id)
-      networkGraphRef.current.zoomToID(id); // Zoom to node
-      networkGraphRef.current.highlightIDCall(id); // Highlight node
-    }
-  }
-
   return (
+
     <ReactLenis root>
+          <motion.div
+    initial="initial"
+    animate="animate"
+    exit="exit"
+    variants={pageVariants}
+  >
       {/* Fixed background */}
       <div className="global-background">
         <GlobalList ref={networkGraphRef} />
       </div>
       
-      <Header sections={sections} activeSection={activeSection} />
       <AnchorMenu 
           sections={sections} 
           activeSection={activeSection} 
           networkGraphRef={networkGraphRef} 
         />
-      <div className="controls" style={{ position: "fixed", top: 100, right: 0, zIndex: 100 }}>
-        <button onClick={handleSetCameraPosition}>Set Camera Position</button>
-        <button onClick={handleRotateGraph}>Rotate Graph</button>
-        <button onClick={handleResizeGraph}>Resize Graph</button>
-        <button onClick={handleZoomToFit}>Zoom to Fit</button>
-        <button onClick={() => handleZoomToID(54)}>Zoom to Article 54</button>
-      </div>
 
       {/* Smooth scrolling content */}
       <div className="content">
         {sections.map(({ id }) => (
-          <section key={id} id={id}>
-            {id === "Bio" && <h1>Biography</h1>}
+          <div className="wrapper" key={id} id={id}>
+            {id === "Bio" && <Bio />}
             {id === "thesis" && <ThesisList />}
             {id === "articles" && <ArticleList />}
             {id === "talks" && <TalkList />}
             {id === "code" && <CodeProjectsList />}
             {id === "multimedia" && <MultimediaList />}
             {id === "media" && <MediaAppareancesList />}
-          </section>
+          </div>
         ))}
       </div>
-      <NetworkGraph posts={[]} />
+      </motion.div>
     </ReactLenis>
   );
 };

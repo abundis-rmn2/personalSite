@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle, useState } from 'react';
-import ForceGraph3D from '3d-force-graph';
-import * as THREE from 'three';
+//import ForceGraph3D from '3d-force-graph';
+//import * as THREE from 'three';
 
 const NetworkGraph = forwardRef(({ posts }, ref) => {
   const containerRef = useRef(null);
@@ -9,20 +9,6 @@ const NetworkGraph = forwardRef(({ posts }, ref) => {
   const [highlightNodes, setHighlightNodes] = useState(new Set());
   const [highlightLinks, setHighlightLinks] = useState(new Set());
 
-  // Color mapping for node types
-  /*
-  const nodeTypeColors = {
-    blog: '#FF5733',
-    conference: '#33FF57',
-    codeProject: '#3357FF',
-    paper: '#FF33A1',
-    multimediaProject: '#A133FF',
-    mediaAppearance: '#33FFF5',
-    thesis: '#F5FF33',
-    default: '#CCCCCC',
-  };
-  */
-  
     // Color mapping for node types
     const nodeTypeColors = {
       blog: '#FF0000',
@@ -61,77 +47,6 @@ const NetworkGraph = forwardRef(({ posts }, ref) => {
     return lines;
   };
 
-  // Update the createTextSprite function to accept renderOrder and opacity parameters
-  const createTextSprite = (text, color = '#000000', font = 'bold 32px Arial', 
-                            backgroundColor = 'rgba(255, 255, 255, 0.9)', 
-                            opacity = 1.0, renderOrder = 0) => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    
-    // Split text into lines
-    const textLines = wrapText(text, 20);
-    
-    // Set font for measurement
-    context.font = font;
-    const fontSize = parseInt(font.match(/\d+/)[0], 10);
-    
-    // Measure widest line
-    let maxWidth = 0;
-    textLines.forEach(line => {
-      const lineWidth = context.measureText(line).width;
-      if (lineWidth > maxWidth) maxWidth = lineWidth;
-    });
-    
-    // Set canvas dimensions
-    const padding = 10;
-    const lineHeight = fontSize * 1.2;
-    canvas.width = maxWidth + padding * 2;
-    canvas.height = (textLines.length * lineHeight) + padding * 2;
-    
-    // Redraw with proper canvas size
-    context.font = font;
-    context.fillStyle = backgroundColor;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Add a border for better visibility
-    context.strokeStyle = '#000000';
-    context.lineWidth = 2;
-    context.strokeRect(0, 0, canvas.width, canvas.height);
-    
-    // Add text with proper positioning for multiple lines
-    context.fillStyle = color;
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    
-    // Draw each line of text
-    textLines.forEach((line, i) => {
-      const y = padding + (i * lineHeight) + lineHeight / 2;
-      context.fillText(line, canvas.width / 2, y);
-    });
-    
-    // Create sprite from canvas
-    const texture = new THREE.CanvasTexture(canvas);
-    const spriteMaterial = new THREE.SpriteMaterial({ 
-      map: texture,
-      transparent: true,
-      opacity: opacity,
-      depthWrite: false, // Don't write to depth buffer (allows stacking)
-      depthTest: false,  // Don't test against depth buffer (appears in front)
-      sizeAttenuation: false 
-    });
-    
-    const sprite = new THREE.Sprite(spriteMaterial);
-    
-    // Set render order (higher values render on top)
-    sprite.renderOrder = renderOrder;
-    
-    // Adjust scale based on text length for better visibility
-    const scaleFactor = 0.0008;
-    //sprite.scale.set(0.5, 0.5, 1); // Adjust the scale to fit the text
-    sprite.scale.set(canvas.width * scaleFactor, canvas.height * scaleFactor, 1);
-    
-    return sprite;
-  };
 
   // Function to highlight a node by ID
   const highlightID = (id) => {
@@ -315,6 +230,7 @@ const NetworkGraph = forwardRef(({ posts }, ref) => {
         graphRef.current.zoomToFit(1000, 50);
       } else {
       console.log("highlightIDCall", id);
+        if (!graphRef.current) return;
         const graphData = graphRef.current.graphData();
         const node = graphData.nodes.find((n) => n.id === id);
         console.log(node)
@@ -395,7 +311,86 @@ const NetworkGraph = forwardRef(({ posts }, ref) => {
   useEffect(() => {
     if (!containerRef.current || !posts || posts.length === 0) return;
 
+    if (typeof window === 'undefined') return; // SSR guard
+
+    const initGraph = async () => {
+      const ForceGraph3D = (await import('3d-force-graph')).default;
+      const THREE = await import('three');
+
     const graphData = generateGraphData(posts);
+
+  // Update the createTextSprite function to accept renderOrder and opacity parameters
+  const createTextSprite = (text, color = '#000000', font = 'bold 32px Arial', 
+    backgroundColor = 'rgba(255, 255, 255, 0.9)', 
+    opacity = 1.0, renderOrder = 0) => {
+if (typeof window === 'undefined') return null; // SSR guard
+const canvas = document.createElement('canvas');
+const context = canvas.getContext('2d');
+
+// Split text into lines
+const textLines = wrapText(text, 20);
+
+// Set font for measurement
+context.font = font;
+const fontSize = parseInt(font.match(/\d+/)[0], 10);
+
+// Measure widest line
+let maxWidth = 0;
+textLines.forEach(line => {
+const lineWidth = context.measureText(line).width;
+if (lineWidth > maxWidth) maxWidth = lineWidth;
+});
+
+// Set canvas dimensions
+const padding = 10;
+const lineHeight = fontSize * 1.2;
+canvas.width = maxWidth + padding * 2;
+canvas.height = (textLines.length * lineHeight) + padding * 2;
+
+// Redraw with proper canvas size
+context.font = font;
+context.fillStyle = backgroundColor;
+context.fillRect(0, 0, canvas.width, canvas.height);
+
+// Add a border for better visibility
+context.strokeStyle = '#000000';
+context.lineWidth = 2;
+context.strokeRect(0, 0, canvas.width, canvas.height);
+
+// Add text with proper positioning for multiple lines
+context.fillStyle = color;
+context.textAlign = 'center';
+context.textBaseline = 'middle';
+
+// Draw each line of text
+textLines.forEach((line, i) => {
+const y = padding + (i * lineHeight) + lineHeight / 2;
+context.fillText(line, canvas.width / 2, y);
+});
+
+// Create sprite from canvas
+const texture = new THREE.CanvasTexture(canvas);
+const spriteMaterial = new THREE.SpriteMaterial({ 
+map: texture,
+transparent: true,
+opacity: opacity,
+depthWrite: false, // Don't write to depth buffer (allows stacking)
+depthTest: false,  // Don't test against depth buffer (appears in front)
+sizeAttenuation: false 
+});
+
+const sprite = new THREE.Sprite(spriteMaterial);
+
+// Set render order (higher values render on top)
+sprite.renderOrder = renderOrder;
+
+// Adjust scale based on text length for better visibility
+const scaleFactor = 0.0008;
+//sprite.scale.set(0.5, 0.5, 1); // Adjust the scale to fit the text
+sprite.scale.set(canvas.width * scaleFactor, canvas.height * scaleFactor, 1);
+
+return sprite;
+};
 
     // Add light to the scene for better visibility
     const addLights = (scene) => {
@@ -486,11 +481,16 @@ const NetworkGraph = forwardRef(({ posts }, ref) => {
         Graph.scene().userData.lightsAdded = true;
       }
     });
-    const windowWidth = window.innerWidth;
-    graphRef.current.width("windowWidth / 1.6");
+
+  };
+
+    initGraph();
+  
+    
     return () => {
-      Graph._destructor();
+      if (graphRef.current) graphRef.current._destructor();
     };
+  
   }, []);
   
   return (
